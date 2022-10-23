@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  nats:
+    image: 'nats:latest'
+    command: "-DV -js"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    hostname: nats-server

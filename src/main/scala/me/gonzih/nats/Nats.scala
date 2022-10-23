@@ -7,27 +7,41 @@ import cats.effect.unsafe.implicits.global
 import io.nats.client.Connection
 import io.nats.client.Dispatcher
 import io.nats.client.JetStream
+import io.nats.client.JetStreamSubscription
 import io.nats.client.Message
 import io.nats.client.MessageHandler
+import io.nats.client.PullSubscribeOptions
 import io.nats.client.PushSubscribeOptions
-import io.nats.client.Subscription
 import io.nats.client.api.StorageType
 import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
+
+import scala.collection.JavaConverters._
 
 def f2messageHandler(f: Message => Unit): MessageHandler =
   new MessageHandler:
     override def onMessage(msg: Message): Unit =
       f(msg)
 
-class NatsPushSubscription(sub: Subscription, q: Queue[IO, Message]):
+class NatsPushSubscription(
+    sub: JetStreamSubscription,
+    q: Queue[IO, Message],
+    dispatcher: Dispatcher
+):
   def unsubscribe: IO[Unit] =
-    IO.blocking(sub.unsubscribe())
+    IO.blocking(dispatcher.unsubscribe(sub))
 
   def take: IO[Message] =
     q.take
-
 end NatsPushSubscription
+
+class NatsPullSubscription(sub: JetStreamSubscription):
+  def unsubscribe: IO[Unit] =
+    IO.blocking(sub.unsubscribe())
+
+  def fetch(batchsize: Int, wait: Long): IO[List[Message]] =
+    IO.blocking(sub.fetch(batchsize, wait).asScala.toList)
+end NatsPullSubscription
 
 class NatsJetStream(nc: Connection, js: JetStream):
   def publish(subject: String, body: Array[Byte]): IO[Unit] =
@@ -43,8 +57,16 @@ class NatsJetStream(nc: Connection, js: JetStream):
       .builder()
       .stream(stream)
       .durable(durable)
-      .build();
+      .build()
+    subscribe(stream, subject, durable, autoack, so)
 
+  def subscribe(
+      stream: String,
+      subject: String,
+      durable: String,
+      autoack: Boolean,
+      so: PushSubscribeOptions
+  ): IO[NatsPushSubscription] =
     for
       dispatcher <- IO.pure(nc.createDispatcher)
       q <- Queue.unbounded[IO, Message]
@@ -52,16 +74,33 @@ class NatsJetStream(nc: Connection, js: JetStream):
         js.subscribe(
           subject,
           dispatcher,
-          f2messageHandler(msg =>
-            println("IN HANDLER")
-            q.offer(msg).unsafeRunSync()
-          ),
+          f2messageHandler(msg => q.offer(msg).unsafeRunSync()),
           autoack,
           so
         )
       )
-    yield NatsPushSubscription(sub, q)
+    yield NatsPushSubscription(sub, q, dispatcher)
 
+  def pullSubscribe(
+      stream: String,
+      subject: String,
+      durable: String
+  ): IO[NatsPullSubscription] =
+    val so = PullSubscribeOptions
+      .builder()
+      .stream(stream)
+      .durable(durable)
+      .build()
+    pullSubscribe(stream, subject, durable, so)
+
+  def pullSubscribe(
+      stream: String,
+      subject: String,
+      durable: String,
+      so: PullSubscribeOptions
+  ): IO[NatsPullSubscription] =
+    for sub <- IO(js.subscribe(subject, so))
+    yield NatsPullSubscription(sub)
 end NatsJetStream
 
 class NatsConnection(nc: Connection):
@@ -72,27 +111,24 @@ class NatsConnection(nc: Connection):
       stream: String,
       subject: String
   ): IO[Unit] =
-    val jsm = nc.jetStreamManagement()
     val sc = StreamConfiguration
       .builder()
       .name(stream)
       .subjects(subject)
-      // .retentionPolicy(...)
-      // .maxConsumers(...)
-      // .maxBytes(...)
-      // .maxAge(...)
-      // .maxMsgSize(...)
       .storageType(StorageType.Memory)
-      // .replicas(...)
-      // .noAck(...)
-      // .template(...)
-      // .discardPolicy(...)
-      .build();
+      .build()
+    addStream(stream, subject, sc)
+
+  def addStream(
+      stream: String,
+      subject: String,
+      sc: StreamConfiguration
+  ): IO[Unit] =
+    val jsm = nc.jetStreamManagement()
     IO.blocking(jsm.addStream(sc))
 
   def close: IO[Unit] =
     IO.blocking(nc.close())
-
 end NatsConnection
 
 object Nats:
@@ -100,5 +136,4 @@ object Nats:
     Resource.make(IO.blocking(NatsConnection(JClient.connect(url))))(nc =>
       nc.close
     )
-
 end Nats

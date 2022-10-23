@@ -1,0 +1,15 @@
+name: CI
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: isbang/compose-action@v1.3.2
+        with:
+          compose-file: "./docker/docker-compose-ci.yaml"
+      - run: sudo apt install -y openjdk-17-jre-headless
+      - run: make cs-install cs-setup
+      - run: make ci
