@@ -15,8 +15,8 @@ import io.nats.client.PushSubscribeOptions
 import io.nats.client.api.StorageType
 import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
-import java.time.Duration
 
+import java.time.Duration
 import scala.collection.JavaConverters._
 
 def f2messageHandler(f: Message => Unit): MessageHandler =
