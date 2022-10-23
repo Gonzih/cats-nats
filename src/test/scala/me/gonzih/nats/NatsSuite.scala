@@ -9,7 +9,7 @@ import scala.concurrent.duration.Duration.apply
 
 val url = System.getenv("NATS_URL")
 
-class HelloWorldSuite extends CatsEffectSuite {
+class NatsSuite extends CatsEffectSuite {
 
   test("Basic NATS pub/sub") {
     val payload = "hello world-basic"
