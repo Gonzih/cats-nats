@@ -11,6 +11,21 @@ val url = System.getenv("NATS_URL")
 
 class HelloWorldSuite extends CatsEffectSuite {
 
+  test("Basic NATS pub/sub") {
+    val payload = "hello world-basic"
+    val subj = "test-topic.123.hi-basic"
+    Nats
+      .connect(url)
+      .use({ case nc =>
+        for
+          sub <- nc.subscribe(subj)
+          _ <- nc.publish(subj, payload.getBytes)
+          msg <- sub.next(Duration.ofSeconds(10))
+          _ <- sub.unsubscribe
+        yield assertEquals(String(msg.getData()), payload)
+      })
+  }
+
   test("Push based pub/sub") {
     val payload = "hello world"
     val stream = "test-stream"

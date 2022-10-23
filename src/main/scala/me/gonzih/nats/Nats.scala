@@ -12,6 +12,7 @@ import io.nats.client.Message
 import io.nats.client.MessageHandler
 import io.nats.client.PullSubscribeOptions
 import io.nats.client.PushSubscribeOptions
+import io.nats.client.Subscription
 import io.nats.client.api.StorageType
 import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
@@ -131,9 +132,35 @@ class NatsConnection(nc: Connection):
     val jsm = nc.jetStreamManagement()
     IO.blocking(jsm.addStream(sc))
 
+  def publish(msg: Message): IO[Unit] =
+    IO.blocking(nc.publish(msg))
+
+  def publish(subject: String, msg: Array[Byte]): IO[Unit] =
+    IO.blocking(nc.publish(subject, msg))
+
+  def publish(subject: String, replyTo: String, msg: Array[Byte]): IO[Unit] =
+    IO.blocking(nc.publish(subject, replyTo, msg))
+
+  def subscribe(subject: String): IO[NatsSubscription] =
+    IO.blocking(NatsSubscription(nc.subscribe(subject)))
+
+  def subscribe(subject: String, queue: String): IO[NatsSubscription] =
+    IO.blocking(NatsSubscription(nc.subscribe(subject, queue)))
+
   def close: IO[Unit] =
     IO.blocking(nc.close())
 end NatsConnection
+
+class NatsSubscription(sub: Subscription):
+  def unsubscribe: IO[Unit] =
+    IO(sub.unsubscribe)
+
+  def next(timeout: Long): IO[Message] =
+    IO.blocking(sub.nextMessage(timeout))
+
+  def next(timeout: Duration): IO[Message] =
+    IO.blocking(sub.nextMessage(timeout))
+end NatsSubscription
 
 object Nats:
   def connect(url: String): Resource[IO, NatsConnection] =
