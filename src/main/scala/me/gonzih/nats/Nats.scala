@@ -10,6 +10,7 @@ import io.nats.client.JetStream
 import io.nats.client.JetStreamSubscription
 import io.nats.client.Message
 import io.nats.client.MessageHandler
+import io.nats.client.PublishOptions
 import io.nats.client.PullSubscribeOptions
 import io.nats.client.PushSubscribeOptions
 import io.nats.client.Subscription
@@ -49,8 +50,21 @@ class NatsPullSubscription(sub: JetStreamSubscription):
 end NatsPullSubscription
 
 class NatsJetStream(nc: Connection, js: JetStream):
+  def publish(msg: Message): IO[Unit] =
+    IO.blocking(js.publish(msg))
+
+  def publish(msg: Message, po: PublishOptions): IO[Unit] =
+    IO.blocking(js.publish(msg, po))
+
   def publish(subject: String, body: Array[Byte]): IO[Unit] =
     IO.blocking(js.publish(subject, body))
+
+  def publish(
+      subject: String,
+      body: Array[Byte],
+      po: PublishOptions
+  ): IO[Unit] =
+    IO.blocking(js.publish(subject, body, po))
 
   def subscribe(
       stream: String,
