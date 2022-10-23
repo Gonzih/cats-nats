@@ -3,8 +3,9 @@ package me.gonzih.nats
 import cats.effect.IO
 import cats.effect.SyncIO
 import munit.CatsEffectSuite
-import scala.concurrent.duration.Duration.apply
+
 import java.time.Duration
+import scala.concurrent.duration.Duration.apply
 
 val url = System.getenv("NATS_URL")
 
