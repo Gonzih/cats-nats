@@ -15,6 +15,7 @@ import io.nats.client.PushSubscribeOptions
 import io.nats.client.api.StorageType
 import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
+import java.time.Duration
 
 import scala.collection.JavaConverters._
 
@@ -40,6 +41,9 @@ class NatsPullSubscription(sub: JetStreamSubscription):
     IO.blocking(sub.unsubscribe())
 
   def fetch(batchsize: Int, wait: Long): IO[List[Message]] =
+    IO.blocking(sub.fetch(batchsize, wait).asScala.toList)
+
+  def fetch(batchsize: Int, wait: Duration): IO[List[Message]] =
     IO.blocking(sub.fetch(batchsize, wait).asScala.toList)
 end NatsPullSubscription
 
