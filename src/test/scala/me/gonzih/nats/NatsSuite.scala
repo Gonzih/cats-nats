@@ -88,4 +88,22 @@ class NatsSuite extends CatsEffectSuite {
         )
       })
   }
+
+  test("Simple KV") {
+    val bucket = "test-bucket-1"
+    val key = "inner-key"
+    val value = "hello world 2"
+    Nats
+      .connect(url)
+      .use({ case nc =>
+        for
+          bs <- nc.kvManagement.create(bucket)
+          kv <- nc.kv(bucket)
+          version <- kv.create(key, value.getBytes)
+          v <- kv.get(key)
+          _ <- kv.delete(key)
+          _ <- nc.kvManagement.delete(bucket)
+        yield assertEquals(String(v.getValue()), value)
+      })
+  }
 }

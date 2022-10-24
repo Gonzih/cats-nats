@@ -8,12 +8,18 @@ import io.nats.client.Connection
 import io.nats.client.Dispatcher
 import io.nats.client.JetStream
 import io.nats.client.JetStreamSubscription
+import io.nats.client.KeyValue
+import io.nats.client.KeyValueManagement
+import io.nats.client.KeyValueOptions
 import io.nats.client.Message
 import io.nats.client.MessageHandler
 import io.nats.client.PublishOptions
 import io.nats.client.PullSubscribeOptions
 import io.nats.client.PushSubscribeOptions
 import io.nats.client.Subscription
+import io.nats.client.api.KeyValueConfiguration
+import io.nats.client.api.KeyValueEntry
+import io.nats.client.api.KeyValueStatus
 import io.nats.client.api.StorageType
 import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
@@ -161,9 +167,78 @@ class NatsConnection(nc: Connection):
   def subscribe(subject: String, queue: String): IO[NatsSubscription] =
     IO.blocking(NatsSubscription(nc.subscribe(subject, queue)))
 
+  def kv(bucket: String): IO[NatsKeyValue] =
+    IO.blocking(NatsKeyValue(nc.keyValue(bucket)))
+
+  def kv(bucket: String, kvo: KeyValueOptions): IO[NatsKeyValue] =
+    IO.blocking(NatsKeyValue(nc.keyValue(bucket, kvo)))
+
+  def kvManagement: NatsKeyValueManagement =
+    NatsKeyValueManagement(nc.keyValueManagement())
+
+  def kvManagement(kvo: KeyValueOptions): NatsKeyValueManagement =
+    NatsKeyValueManagement(nc.keyValueManagement(kvo))
+
   def close: IO[Unit] =
     IO.blocking(nc.close())
 end NatsConnection
+
+class NatsKeyValueManagement(kvm: KeyValueManagement):
+  def create(bucket: String): IO[KeyValueStatus] =
+    val kvc = KeyValueConfiguration.builder().name(bucket).build()
+    create(kvc)
+
+  def create(kvc: KeyValueConfiguration): IO[KeyValueStatus] =
+    IO.blocking(kvm.create(kvc))
+
+  def delete(bucket: String): IO[Unit] =
+    IO.blocking(kvm.delete(bucket))
+
+  def update(kvc: KeyValueConfiguration): IO[KeyValueStatus] =
+    IO.blocking(kvm.update(kvc))
+
+  def status(bucket: String): IO[KeyValueStatus] =
+    IO.blocking(kvm.getStatus(bucket))
+
+  def buckets: IO[List[String]] =
+    IO.blocking(kvm.getBucketNames().asScala.toList)
+
+  def statuses: IO[List[KeyValueStatus]] =
+    IO.blocking(kvm.getStatuses().asScala.toList)
+
+end NatsKeyValueManagement
+
+class NatsKeyValue(kv: KeyValue):
+  def create(key: String, value: Array[Byte]): IO[Long] =
+    IO.blocking(kv.create(key, value))
+
+  def put(key: String, value: Array[Byte]): IO[Long] =
+    IO.blocking(kv.put(key, value))
+
+  def update(key: String, value: Array[Byte], revision: Long): IO[Long] =
+    IO.blocking(kv.update(key, value, revision))
+
+  def get(key: String): IO[KeyValueEntry] =
+    IO.blocking(kv.get(key))
+
+  def get(key: String, revision: Long): IO[KeyValueEntry] =
+    IO.blocking(kv.get(key, revision))
+
+  def delete(key: String): IO[Unit] =
+    IO.blocking(kv.delete(key))
+
+  def keys: IO[List[String]] =
+    IO.blocking(kv.keys().asScala.toList)
+
+  def history(key: String): IO[List[KeyValueEntry]] =
+    IO.blocking(kv.history(key).asScala.toList)
+
+  def purge(key: String): IO[Unit] =
+    IO.blocking(kv.purge(key))
+
+  def purgeDeletes: IO[Unit] =
+    IO.blocking(kv.purgeDeletes())
+end NatsKeyValue
 
 class NatsSubscription(sub: Subscription):
   def unsubscribe: IO[Unit] =
