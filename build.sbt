@@ -31,6 +31,8 @@ ThisBuild / publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
+Global / excludeLintKeys ++= Set(pomIncludeRepository, publishMavenStyle)
+
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
   libraryDependencies ++= Seq(
