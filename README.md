@@ -53,8 +53,9 @@ object Main extends IOApp.Simple {
           msg <- sub.take
           // unsubscribe
           _ <- sub.unsubscribe
-        // print result
-        yield IO.println(String(msg.getData()))
+          // print result
+          IO.println(String(msg.getData()))
+        yield ()
       })
 }
 ```
@@ -96,8 +97,9 @@ object Main extends IOApp.Simple {
           _ <- kv.purgeDeletes
           // delete bucket
           _ <- nc.kvManagement.delete(bucket)
-        // print result
-        yield IO.println(String(v))
+          // print result
+          _ <-_IO.println(String(v))
+        yield ()
       })
 }
 ```
