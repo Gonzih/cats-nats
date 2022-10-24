@@ -5,8 +5,8 @@
 [Badge-CI]: https://github.com/zio/zio/workflows/CI/badge.svg
 [Badge-SonatypeReleases]: https://img.shields.io/nexus/r/https/s01.oss.sonatype.org/io.github.gonzih/cats-nats_3.svg "Sonatype Releases"
 [Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.gonzih/cats-nats_3.svg "Sonatype Snapshots"
-[Link-SonatypeReleases]: https://s01.oss.sonatype.org/content/repositories/releases/io/github/gonzih/nats-cats_3/ "Sonatype Releases"
-[Link-SonatypeSnapshots]: https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/gonzih/nats-cats_3/ "Sonatype Snapshots"
+[Link-SonatypeReleases]: https://s01.oss.sonatype.org/content/repositories/releases/io/github/gonzih/cats-nats_3/ "Sonatype Releases"
+[Link-SonatypeSnapshots]: https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/gonzih/cats-nats_3/ "Sonatype Snapshots"
 
 
 # Cats Nats
