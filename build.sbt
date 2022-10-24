@@ -1,8 +1,9 @@
-ThisBuild / organization := "com.example"
+ThisBuild / organization := "me.gonzih"
 ThisBuild / scalaVersion := "3.2.0"
 
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
+  version := "0.1.0-SNAPSHOT"
   libraryDependencies ++= Seq(
     "io.nats" % "jnats" % "2.16.1",
     // "core" module - IO, IOApp, schedulers
