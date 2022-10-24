@@ -1,3 +1,5 @@
+![Cats went Nats][/cats-nats.jpeg]
+
 | CI | Release | Snapshot |
 | --- | --- | --- |
 | ![CI][Badge-CI] | [![Release Artifacts][Badge-SonatypeReleases]][Link-SonatypeReleases] | [![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots] |
