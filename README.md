@@ -1,4 +1,4 @@
-![Cats went Nats][/cats-nats.jpeg]
+![Cats went Nats](/cats-nats.jpeg)
 
 | CI | Release | Snapshot |
 | --- | --- | --- |
