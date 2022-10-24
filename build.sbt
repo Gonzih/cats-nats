@@ -32,6 +32,8 @@ ThisBuild / publishTo := {
 ThisBuild / publishMavenStyle := true
 
 Global / excludeLintKeys ++= Set(pomIncludeRepository, publishMavenStyle)
+// publishConfiguration := publishConfiguration.value.withOverwrite(true)
+// publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
 
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
