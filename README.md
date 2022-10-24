@@ -59,3 +59,45 @@ object Main extends IOApp.Simple {
 }
 ```
 
+
+Key Value storage example:
+
+
+```scala
+import cats.effect.IOApp
+import cats.effect.IO
+import io.github.gonzih.nats.Nats
+
+object Main extends IOApp.Simple {
+
+  def run: IO[Unit] =
+    val bucket = "kv-bucket"
+    val key = "kv-object-key"
+    val value = "object contents"
+
+    // connect to nats via Cats Effect Resource
+    Nats
+      .connect("nats://localhost:4222")
+      .use({ case nc =>
+        for
+          // create bucket
+          __<- nc.kvManagement.create(bucket)
+          // get bucket KV instance
+          kv <- nc.kv(bucket)
+          // create new object
+          version <- kv.create(key, value.getBytes)
+          // read object by key
+          ve <- kv.get(key)
+          // read content of an object
+          v <- ve.value
+          // delete object by key
+          _ <- kv.delete(key)
+          // purge deletes in bucket
+          _ <- kv.purgeDeletes
+          // delete bucket
+          _ <- nc.kvManagement.delete(bucket)
+        // print result
+        yield IO.println(String(v))
+      })
+}
+```
