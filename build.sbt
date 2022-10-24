@@ -1,6 +1,6 @@
 ThisBuild / organization := "me.gonzih"
 ThisBuild / organizationHomepage := Some(url("https://gonzih.me/"))
-ThisBuild / scalaVersion := "3.1.3"
+ThisBuild / scalaVersion := "3.2.0"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
