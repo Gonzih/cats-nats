@@ -89,7 +89,7 @@ class NatsSuite extends CatsEffectSuite {
       })
   }
 
-  test("Simple KV") {
+  test("KeyValue write/read") {
     val bucket = "test-bucket-1"
     val key = "inner-key"
     val value = "hello world 2"
@@ -103,8 +103,39 @@ class NatsSuite extends CatsEffectSuite {
           ve <- kv.get(key)
           v <- ve.value
           _ <- kv.delete(key)
+          _ <- kv.purgeDeletes
           _ <- nc.kvManagement.delete(bucket)
         yield assertEquals(String(v), value)
+      })
+  }
+
+  test("KeyValueEntry properties test") {
+    val bucket = "test-bucket-2"
+    val key = "obj-key"
+    val value = "hello world 3"
+    Nats
+      .connect(url)
+      .use({ case nc =>
+        for
+          bs <- nc.kvManagement.create(bucket)
+          kv <- nc.kv(bucket)
+          _ <- kv.create(key, value.getBytes)
+          ve <- kv.get(key)
+          v <- ve.value
+          k <- ve.key
+          r <- ve.revision
+          d <- ve.delta
+          l <- ve.len
+          _ <- kv.delete(key)
+          _ <- kv.purgeDeletes
+          _ <- nc.kvManagement.delete(bucket)
+        yield (
+          assertEquals(String(v), value),
+          assertEquals(k, key),
+          assertEquals(r, 1.longValue),
+          assertEquals(d, 0.longValue),
+          assertEquals(l, 13.longValue)
+        )
       })
   }
 }
