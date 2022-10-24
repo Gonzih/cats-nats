@@ -1,7 +1,27 @@
 ThisBuild / organization := "me.gonzih"
-ThisBuild / scalaVersion := "3.2.0"
+ThisBuild / organizationHomepage := Some(url("https://gonzih.me/"))
+ThisBuild / scalaVersion := "3.1.3"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/Gonzih/cats-nats"),
+    "scm:git@github.com:Gonzih/cats-nats.git"
+  )
+)
+ThisBuild / developers := List(
+  Developer(
+    id = "Gonzih",
+    name = "Max Soltan",
+    email = "gonzih@gmail.com",
+    url = url("https://gonzih.me/")
+  )
+)
+
+ThisBuild / description := "Cats friendly wrapper around NATS client"
+ThisBuild / homepage := Some(url("https://github.com/Gonzih/cats-nats"))
 
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
