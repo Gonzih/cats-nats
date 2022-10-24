@@ -206,7 +206,6 @@ class NatsKeyValueManagement(kvm: KeyValueManagement):
 
   def statuses: IO[List[KeyValueStatus]] =
     IO.blocking(kvm.getStatuses().asScala.toList)
-
 end NatsKeyValueManagement
 
 class NatsKeyValue(kv: KeyValue):
