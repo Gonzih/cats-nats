@@ -7,6 +7,7 @@ import cats.effect.unsafe.implicits.global
 import io.nats.client.Connection
 import io.nats.client.Dispatcher
 import io.nats.client.JetStream
+import io.nats.client.JetStreamOptions
 import io.nats.client.JetStreamSubscription
 import io.nats.client.KeyValue
 import io.nats.client.KeyValueManagement
@@ -132,6 +133,9 @@ end NatsJetStream
 class NatsConnection(nc: Connection):
   def js: IO[NatsJetStream] =
     IO(NatsJetStream(nc, nc.jetStream()))
+
+  def js(jso: JetStreamOptions): IO[NatsJetStream] =
+    IO(NatsJetStream(nc, nc.jetStream(jso)))
 
   def addStream(
       stream: String,

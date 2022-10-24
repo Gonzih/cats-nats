@@ -3,7 +3,7 @@ ThisBuild / organizationHomepage := Some(url("https://github.com/Gonzih"))
 ThisBuild / scalaVersion := "3.2.0"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.0"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(

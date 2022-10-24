@@ -11,7 +11,7 @@ val url = System.getenv("NATS_URL")
 
 class NatsSuite extends CatsEffectSuite {
 
-  test("Basic NATS pub/sub") {
+  test("Nats pub/sub") {
     val payload = "hello world-basic"
     val subj = "test-topic.123.hi-basic"
     Nats
@@ -26,7 +26,7 @@ class NatsSuite extends CatsEffectSuite {
       })
   }
 
-  test("Push based pub/sub") {
+  test("JetStream Push based pub/sub") {
     val payload = "hello world"
     val stream = "test-stream"
     val subj = "test-topic.123.hi"
@@ -45,7 +45,7 @@ class NatsSuite extends CatsEffectSuite {
       })
   }
 
-  test("Pull based pub/sub") {
+  test("JetStream Pull based pub/sub") {
     val payload = "hello world 2"
     val stream = "test-stream-pull"
     val subj = "test-topic.123.hi-pull"
@@ -67,7 +67,7 @@ class NatsSuite extends CatsEffectSuite {
       })
   }
 
-  test("Pull based pub/sub with Duration") {
+  test("JetStream Pull based pub/sub with Duration") {
     val payload = "hello world 2"
     val stream = "test-stream-pull"
     val subj = "test-topic.123.hi-pull"
