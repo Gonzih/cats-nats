@@ -1,9 +1,9 @@
 ThisBuild / organization := "io.github.gonzih"
-ThisBuild / organizationHomepage := Some(url("https://gonzih.me/"))
+ThisBuild / organizationHomepage := Some(url("https://github.com/Gonzih"))
 ThisBuild / scalaVersion := "3.2.0"
 ThisBuild / versionScheme := Some("early-semver")
-ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -23,13 +23,13 @@ ThisBuild / developers := List(
 ThisBuild / description := "Cats friendly wrapper around NATS client"
 ThisBuild / homepage := Some(url("https://github.com/Gonzih/cats-nats"))
 
+ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
-
-// ThisBuild / publishMavenStyle := true
+ThisBuild / publishMavenStyle := true
 
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
