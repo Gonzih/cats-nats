@@ -25,6 +25,7 @@ import io.nats.client.api.StreamConfiguration
 import io.nats.client.{Nats => JClient}
 
 import java.time.Duration
+import java.time.ZonedDateTime
 import scala.collection.JavaConverters._
 
 def f2messageHandler(f: Message => Unit): MessageHandler =
@@ -218,11 +219,11 @@ class NatsKeyValue(kv: KeyValue):
   def update(key: String, value: Array[Byte], revision: Long): IO[Long] =
     IO.blocking(kv.update(key, value, revision))
 
-  def get(key: String): IO[KeyValueEntry] =
-    IO.blocking(kv.get(key))
+  def get(key: String): IO[NatsKeyValueEntry] =
+    IO.blocking(NatsKeyValueEntry(kv.get(key)))
 
-  def get(key: String, revision: Long): IO[KeyValueEntry] =
-    IO.blocking(kv.get(key, revision))
+  def get(key: String, revision: Long): IO[NatsKeyValueEntry] =
+    IO.blocking(NatsKeyValueEntry(kv.get(key, revision)))
 
   def delete(key: String): IO[Unit] =
     IO.blocking(kv.delete(key))
@@ -239,6 +240,29 @@ class NatsKeyValue(kv: KeyValue):
   def purgeDeletes: IO[Unit] =
     IO.blocking(kv.purgeDeletes())
 end NatsKeyValue
+
+class NatsKeyValueEntry(kve: KeyValueEntry):
+  def bucket: IO[String] =
+    IO.blocking(kve.getBucket())
+
+  def key: IO[String] =
+    IO.blocking(kve.getKey())
+
+  def created: IO[ZonedDateTime] =
+    IO.blocking(kve.getCreated())
+
+  def len: IO[Long] =
+    IO.blocking(kve.getDataLen())
+
+  def delta: IO[Long] =
+    IO.blocking(kve.getDelta())
+
+  def revision: IO[Long] =
+    IO.blocking(kve.getRevision())
+
+  def value: IO[Array[Byte]] =
+    IO.blocking(kve.getValue())
+end NatsKeyValueEntry
 
 class NatsSubscription(sub: Subscription):
   def unsubscribe: IO[Unit] =

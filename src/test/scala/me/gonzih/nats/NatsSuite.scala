@@ -100,10 +100,11 @@ class NatsSuite extends CatsEffectSuite {
           bs <- nc.kvManagement.create(bucket)
           kv <- nc.kv(bucket)
           version <- kv.create(key, value.getBytes)
-          v <- kv.get(key)
+          ve <- kv.get(key)
+          v <- ve.value
           _ <- kv.delete(key)
           _ <- nc.kvManagement.delete(bucket)
-        yield assertEquals(String(v.getValue()), value)
+        yield assertEquals(String(v), value)
       })
   }
 }
