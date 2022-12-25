@@ -2,7 +2,9 @@ ThisBuild / organization := "io.github.gonzih"
 ThisBuild / organizationHomepage := Some(url("https://github.com/Gonzih"))
 ThisBuild / scalaVersion := "3.2.0"
 ThisBuild / versionScheme := Some("early-semver")
-ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / licenses := Seq(
+  "APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")
+)
 ThisBuild / version := "0.1.0"
 
 ThisBuild / scmInfo := Some(
@@ -26,7 +28,8 @@ ThisBuild / homepage := Some(url("https://github.com/Gonzih/cats-nats"))
 ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
-  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 ThisBuild / publishMavenStyle := true
@@ -41,11 +44,11 @@ lazy val root = (project in file(".")).settings(
     "io.nats" % "jnats" % "2.16.1",
     // "core" module - IO, IOApp, schedulers
     // This pulls in the kernel and std modules automatically.
-    "org.typelevel" %% "cats-effect" % "3.3.14",
+    "org.typelevel" %% "cats-effect" % "3.4.3",
     // concurrency abstractions and primitives (Concurrent, Sync, Async etc.)
-    "org.typelevel" %% "cats-effect-kernel" % "3.3.14",
+    "org.typelevel" %% "cats-effect-kernel" % "3.4.3",
     // standard "effect" library (Queues, Console, Random etc.)
-    "org.typelevel" %% "cats-effect-std" % "3.3.14",
+    "org.typelevel" %% "cats-effect-std" % "3.4.3",
     "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
   )
 )
