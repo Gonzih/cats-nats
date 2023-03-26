@@ -41,7 +41,7 @@ Global / excludeLintKeys ++= Set(pomIncludeRepository, publishMavenStyle)
 lazy val root = (project in file(".")).settings(
   name := "cats-nats",
   libraryDependencies ++= Seq(
-    "io.nats" % "jnats" % "2.16.5",
+    "io.nats" % "jnats" % "2.16.9",
     // "core" module - IO, IOApp, schedulers
     // This pulls in the kernel and std modules automatically.
     "org.typelevel" %% "cats-effect" % "3.4.3",
